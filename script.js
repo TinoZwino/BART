@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const reserveBtn = document.getElementById('reserve-btn');
 
     let lastClickedSeatIndex = -1;
+    let autoSelectIndex = -1;
     
     /**
      * LOCAL RESERVATION STATE
@@ -119,6 +120,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
             seatsOverlay.appendChild(btn);
         });
+
+        // Handle auto-selection from URL
+        if (autoSelectIndex !== -1 && autoSelectIndex < garageSeats.length) {
+            const index = autoSelectIndex;
+            const userReservedIndex = userReservations[date] !== undefined ? userReservations[date] : -1;
+            
+            if (!isOpen) {
+                // Do nothing for closed seats on auto-select
+            } else if (index === userReservedIndex) {
+                showUserReservedMessage(index);
+            } else {
+                const primaryIndices = [0, 1, 2, 3, 4, 5, 6];
+                const secondaryIndices = [7, 8, 9, 10];
+                let takenPrimaryCount = Math.min(drukte, 7);
+                let takenSecondaryCount = Math.max(0, drukte - 7);
+                const takenPrimary = shuffle(primaryIndices, date + "-p").slice(0, takenPrimaryCount);
+                const takenSecondary = shuffle(secondaryIndices, date + "-s").slice(0, takenSecondaryCount);
+                const allTakenIndices = [...takenPrimary, ...takenSecondary];
+                
+                if (allTakenIndices.includes(index)) {
+                    showReservedMessage(index);
+                } else {
+                    showAvailableMessage(index);
+                }
+            }
+            autoSelectIndex = -1; // Reset after selection
+        }
     }
 
     /**
@@ -192,12 +220,32 @@ document.addEventListener('DOMContentLoaded', () => {
         renderSeats(date, dayInfo ? (dayInfo.open ? dayInfo.drukte : 11) : 11, dayInfo ? dayInfo.open : false, dayInfo ? dayInfo.bericht : "");
     });
 
-    /**
-     * CONFIG-BASED AVAILABILITY LOGIC
-     */
     function initAvailability() {
         const data = window.BART_BEZETTING;
         if (data) {
+            // Set date to today
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.value = today;
+
+            // Robust URL Parsing: checks search (?2), hash (#2), and pathname (/2)
+            const getSeatFromURL = () => {
+                const searchMatch = window.location.search.match(/\d+/);
+                if (searchMatch) return parseInt(searchMatch[0]);
+                
+                const hashMatch = window.location.hash.match(/\d+/);
+                if (hashMatch) return parseInt(hashMatch[0]);
+                
+                const pathMatch = window.location.pathname.match(/\/(\d+)\/?$/);
+                if (pathMatch) return parseInt(pathMatch[1]);
+                
+                return NaN;
+            };
+
+            const seatFromUrl = getSeatFromURL();
+            if (!isNaN(seatFromUrl) && seatFromUrl > 0) {
+                autoSelectIndex = seatFromUrl - 1;
+            }
+
             setupDatePicker(data);
             handleDateChange(dateInput.value, data);
         }

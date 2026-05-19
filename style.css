@@ -195,7 +195,19 @@ h2 {
 
 .message-header {
     background-color: var(--bazart-red);
-    padding: 10px 15px;
+    padding: 15px;
+}
+
+.message-wrapper.reserved .message-header {
+    background-color: #666; /* Gray background for reserved seat message */
+}
+
+.message-wrapper.selected .message-header {
+    background-color: var(--available-green); /* Green background for selected seat message */
+}
+
+.message-wrapper.selected .message-header h2 {
+    color: #006400; /* Dark green text for better contrast on light green bg */
 }
 
 .message-header h2 {

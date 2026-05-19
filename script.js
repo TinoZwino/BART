@@ -3,7 +3,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const floorplanContainer = document.getElementById('floorplan-container');
     const dateInput = document.getElementById('start-date');
     const messageWrapper = document.getElementById('message-wrapper');
+    const messageTitle = document.getElementById('message-title');
     const messageContent = document.getElementById('message-content');
+
+    let lastClickedSeatIndex = -1;
 
     /**
      * EXPERT COORDINATE SYSTEM
@@ -51,6 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function renderSeats(date, drukte, isOpen, closedMessage) {
         seatsOverlay.innerHTML = '';
+        lastClickedSeatIndex = -1; // Reset when rendering new set
         
         let allTakenIndices = [];
 
@@ -75,7 +79,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.title = `Gesloten: ${closedMessage}`;
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    alert(closedMessage);
+                    if (lastClickedSeatIndex === index) {
+                        alert(closedMessage);
+                    } else {
+                        lastClickedSeatIndex = index;
+                    }
                 });
             } else {
                 const isTaken = allTakenIndices.includes(index);
@@ -83,10 +91,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.title = `Plaats ${index + 1} (${isTaken ? 'Niet beschikbaar' : 'Beschikbaar'})`;
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
+                    
+                    // Reset classes
+                    messageWrapper.classList.remove('reserved', 'selected');
+
                     if (isTaken) {
-                        alert('Deze plaats is al gereserveerd.');
+                        // Display reserved message in box
+                        messageTitle.textContent = `Plaats ${index + 1}: gereserveerd`;
+                        messageContent.textContent = "De plaats die je hebt geselecteerd is al gereserveerd door iemand anders, probeer een andere plek te reserveren.";
+                        messageWrapper.classList.add('reserved');
+                        messageWrapper.style.display = 'block';
+                        
+                        if (lastClickedSeatIndex === index) {
+                            alert('Deze plaats is al gereserveerd.');
+                        } else {
+                            lastClickedSeatIndex = index;
+                        }
                     } else {
-                        alert(`Je hebt plaats ${index + 1} geselecteerd.`);
+                        // Display selection message in box (Green header)
+                        messageTitle.textContent = `Plaats ${index + 1}: beschikbaar`;
+                        messageContent.textContent = `Je hebt plaats ${index + 1} geselecteerd. Deze plek is nog vrij om te reserveren.`;
+                        messageWrapper.classList.add('selected');
+                        messageWrapper.style.display = 'block';
+                        
+                        lastClickedSeatIndex = index;
                     }
                 });
             }
@@ -108,6 +136,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleDateChange(selectedDate, data) {
         const dayInfo = data.find(item => item.datum === selectedDate);
+        
+        // Always reset styling when changing date
+        messageWrapper.classList.remove('reserved', 'selected');
+        messageTitle.textContent = "Garage niet beschikbaar op de gekozen datum";
+
         if (dayInfo) {
             if (!dayInfo.open) {
                 // Show message box

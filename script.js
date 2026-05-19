@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (index === userReservedIndex) {
                 // USER RESERVED STATE (Blue)
                 btn.className = 'seat-btn user-reserved';
-                btn.title = `Plaats ${index + 1} (Gereserveerd door jou)`;
+                btn.title = `Plaats ${index + 1} (door jou gereserveerd)`;
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     showUserReservedMessage(index);
@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function showUserReservedMessage(index) {
         messageWrapper.classList.remove('selected', 'reserved');
         messageWrapper.classList.add('user-reserved');
-        messageTitle.textContent = `Plaats ${index + 1}: gereserveerd door jou`;
+        messageTitle.textContent = `Plaats ${index + 1}: door jou gereserveerd`;
         messageContent.textContent = `Je hebt deze plaats gereserveerd voor de geselecteerde dag.`;
         
         reserveBtn.textContent = "Reservatie verwijderen";

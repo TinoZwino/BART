@@ -164,20 +164,59 @@ h2 {
     border: 1px solid #999;
 }
 
+.circle.available {
+    background-color: var(--available-green);
+    color: #006400;
+}
+
 .circle.unavailable {
     background-color: var(--unavailable-grey);
     color: #666;
 }
 
-.circle.available {
-    background-color: var(--available-green);
-    color: #006400;
+.circle.closed {
+    background-color: var(--bazart-red);
 }
 
 .instruction {
     font-size: 0.8rem;
     font-style: italic;
     color: #666;
+}
+
+/* Message Box */
+.message-wrapper {
+    background: white;
+    border: 1px solid var(--border-grey);
+    border-radius: 4px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.message-header {
+    background-color: var(--bazart-red);
+    padding: 10px 15px;
+}
+
+.message-header h2 {
+    font-family: 'Roboto Slab', serif;
+    font-weight: 900;
+    margin: 0;
+    font-size: 1.5rem;
+    color: white;
+    justify-content: center;
+    text-transform: uppercase;
+}
+
+.message-body {
+    padding: 15px;
+    font-family: 'Roboto', sans-serif;
+    color: var(--text-dark);
+    line-height: 1.5;
+}
+
+.message-body p {
+    margin: 0;
 }
 
 /* Floorplan */
@@ -265,4 +304,10 @@ h2 {
 .seat-btn.available {
     background-color: var(--available-green);
     color: #006400;
+}
+
+.seat-btn.closed {
+    background-color: var(--bazart-red);
+    color: white;
+    border-color: var(--bazart-dark-red);
 }

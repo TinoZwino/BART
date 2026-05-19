@@ -2,10 +2,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const seatsOverlay = document.getElementById('seats-overlay');
     const floorplanContainer = document.getElementById('floorplan-container');
     const dateInput = document.getElementById('start-date');
+    const messageWrapper = document.getElementById('message-wrapper');
+    const messageContent = document.getElementById('message-content');
 
     /**
-     * EXPERT COORDINATE SYSTEM:
-     * Precision placement based on user calibration.
+     * EXPERT COORDINATE SYSTEM
      */
     const garageSeats = [
         { top: 29, left: 30 },
@@ -23,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * PSEUDORANDOM GENERATOR (Seeded)
-     * Returns a function that generates deterministic random numbers based on a string seed.
      */
     function seededRandom(seed) {
         let hash = 0;
@@ -36,7 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // Shuffle array deterministically
     function shuffle(array, seed) {
         const rng = seededRandom(seed);
         const shuffled = [...array];
@@ -49,42 +48,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * SEAT RENDERING LOGIC
-     * Applies priority rules: 1-7 first, then 8+.
      */
-    function renderSeats(date, drukte) {
+    function renderSeats(date, drukte, isOpen, closedMessage) {
         seatsOverlay.innerHTML = '';
         
-        // Define indices (0-6 are first 7 seats, 7-10 are seats 8-11)
-        const primaryIndices = [0, 1, 2, 3, 4, 5, 6];
-        const secondaryIndices = [7, 8, 9, 10];
+        let allTakenIndices = [];
 
-        // Determine how many seats to take from each group
-        let takenPrimaryCount = Math.min(drukte, 7);
-        let takenSecondaryCount = Math.max(0, drukte - 7);
-
-        // Deterministically select which specific indices in those groups are taken
-        const takenPrimary = shuffle(primaryIndices, date + "-p").slice(0, takenPrimaryCount);
-        const takenSecondary = shuffle(secondaryIndices, date + "-s").slice(0, takenSecondaryCount);
-        
-        const allTakenIndices = [...takenPrimary, ...takenSecondary];
+        if (isOpen) {
+            const primaryIndices = [0, 1, 2, 3, 4, 5, 6];
+            const secondaryIndices = [7, 8, 9, 10];
+            let takenPrimaryCount = Math.min(drukte, 7);
+            let takenSecondaryCount = Math.max(0, drukte - 7);
+            const takenPrimary = shuffle(primaryIndices, date + "-p").slice(0, takenPrimaryCount);
+            const takenSecondary = shuffle(secondaryIndices, date + "-s").slice(0, takenSecondaryCount);
+            allTakenIndices = [...takenPrimary, ...takenSecondary];
+        }
 
         garageSeats.forEach((pos, index) => {
-            const isTaken = allTakenIndices.includes(index);
             const btn = document.createElement('button');
-            btn.className = `seat-btn ${isTaken ? 'unavailable' : 'available'}`;
             btn.style.top = `${pos.top}%`;
             btn.style.left = `${pos.left}%`;
             btn.textContent = index + 1;
-            btn.title = `Plaats ${index + 1} (${isTaken ? 'Niet beschikbaar' : 'Beschikbaar'})`;
-
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (isTaken) {
-                    alert('Deze plaats is al gereserveerd.');
-                } else {
-                    alert(`Je hebt plaats ${index + 1} geselecteerd.`);
-                }
-            });
+            
+            if (!isOpen) {
+                btn.className = 'seat-btn closed';
+                btn.title = `Gesloten: ${closedMessage}`;
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    alert(closedMessage);
+                });
+            } else {
+                const isTaken = allTakenIndices.includes(index);
+                btn.className = `seat-btn ${isTaken ? 'unavailable' : 'available'}`;
+                btn.title = `Plaats ${index + 1} (${isTaken ? 'Niet beschikbaar' : 'Beschikbaar'})`;
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (isTaken) {
+                        alert('Deze plaats is al gereserveerd.');
+                    } else {
+                        alert(`Je hebt plaats ${index + 1} geselecteerd.`);
+                    }
+                });
+            }
 
             seatsOverlay.appendChild(btn);
         });
@@ -97,10 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = window.BART_BEZETTING;
         if (data) {
             setupDatePicker(data);
-            // Initial render
             handleDateChange(dateInput.value, data);
-        } else {
-            console.error('BART_BEZETTING niet gevonden in bezetting.js');
         }
     }
 
@@ -108,15 +110,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const dayInfo = data.find(item => item.datum === selectedDate);
         if (dayInfo) {
             if (!dayInfo.open) {
-                alert(dayInfo.bericht || "Deze datum is niet beschikbaar.");
-                // Render everything as unavailable if closed
-                renderSeats(selectedDate, 11);
+                // Show message box
+                messageContent.textContent = dayInfo.bericht || "Deze locatie is vandaag gesloten.";
+                messageWrapper.style.display = 'block';
+                // Render all seats red
+                renderSeats(selectedDate, 11, false, dayInfo.bericht || "Deze locatie is vandaag gesloten.");
             } else {
-                renderSeats(selectedDate, dayInfo.drukte);
+                // Hide message box
+                messageWrapper.style.display = 'none';
+                renderSeats(selectedDate, dayInfo.drukte, true);
             }
         } else {
-            alert("Deze datum staat niet in ons systeem.");
-            renderSeats(selectedDate, 11); // Default to full if unknown
+            messageContent.textContent = "Geen informatie beschikbaar voor deze datum.";
+            messageWrapper.style.display = 'block';
+            renderSeats(selectedDate, 11, false, "Geen informatie beschikbaar.");
         }
     }
 
@@ -126,7 +133,6 @@ document.addEventListener('DOMContentLoaded', () => {
             dateInput.min = dates[0];
             dateInput.max = dates[dates.length - 1];
         }
-
         dateInput.addEventListener('change', () => {
             handleDateChange(dateInput.value, data);
         });
@@ -135,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initAvailability();
 
     /**
-     * CALIBRATION TOOL (DEVELOPER MODE)
+     * CALIBRATION TOOL
      */
     floorplanContainer.addEventListener('mousedown', (e) => {
         const rect = floorplanContainer.getBoundingClientRect();

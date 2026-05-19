@@ -44,15 +44,28 @@
             <h2><span class="material-icons icon">info</span> Legende</h2>
             <div class="legend-items">
                 <div class="legend-item">
-                    <span class="circle unavailable"></span>
-                    <span>Niet beschikbaar</span>
-                </div>
-                <div class="legend-item">
                     <span class="circle available"></span>
                     <span>Beschikbaar</span>
                 </div>
+                <div class="legend-item">
+                    <span class="circle unavailable"></span>
+                    <span>Gereserveerd</span>
+                </div>
+                <div class="legend-item">
+                    <span class="circle closed"></span>
+                    <span>Niet beschikbaar</span>
+                </div>
             </div>
             <p class="instruction">Klik op een bolletje op de kaart om een beschikbare plaats te selecteren</p>
+        </section>
+
+        <section id="message-wrapper" class="message-wrapper" style="display: none;">
+            <div class="message-header">
+                <h2 id="message-title">Garage niet beschikbaar op de gekozen datum</h2>
+            </div>
+            <div class="message-body">
+                <p id="message-content"></p>
+            </div>
         </section>
 
         <section class="floorplan-wrapper">

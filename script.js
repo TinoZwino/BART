@@ -29,7 +29,9 @@ document.addEventListener('DOMContentLoaded', () => {
         { top: 25, left: 66 },
         { top: 30, left: 66 },
         { top: 35, left: 66 },
-        { top: 40, left: 66 }
+		{ top: 40, left: 66 },
+		{ top: 53, left: 46 },
+        { top: 57, left: 42 },
     ];
 
     /**

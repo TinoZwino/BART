@@ -51,12 +51,26 @@ def generate_qr_codes():
         qr.add_data(url)
         qr.make(fit=True)
 
-        img = qr.make_image(fill_color="black", back_color="white")
+        # Generate image with white background first
+        img = qr.make_image(fill_color="black", back_color="white").convert("RGBA")
+        
+        # Make white pixels transparent
+        data = img.getdata()
+        new_data = []
+        for item in data:
+            # item is (r, g, b, a)
+            # If it's white (255, 255, 255), set alpha to 0
+            if item[:3] == (255, 255, 255):
+                new_data.append((255, 255, 255, 0))
+            else:
+                new_data.append(item)
+        
+        img.putdata(new_data)
         
         # Save image
         file_path = os.path.join(output_dir, f"{i}.png")
         img.save(file_path)
-        print(f"Generated: {file_path} -> {url}")
+        print(f"Generated (transparent): {file_path} -> {url}")
 
     print("Done!")
 

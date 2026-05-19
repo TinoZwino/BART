@@ -256,3 +256,13 @@ h2 {
     transform: translate(-50%, -50%) scale(1.2);
     background-color: #bbb;
 }
+
+.seat-btn.unavailable {
+    background-color: var(--unavailable-grey);
+    color: #444;
+}
+
+.seat-btn.available {
+    background-color: var(--available-green);
+    color: #006400;
+}

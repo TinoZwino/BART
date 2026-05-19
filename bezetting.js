@@ -2,7 +2,7 @@
 // Dit bestand bevat de configuratie voor de beschikbaarheid van BART.
 // Het is een JavaScript object zodat het zonder CORS-problemen lokaal geladen kan worden.
 
-const BART_BEZETTING = [
+window.BART_BEZETTING = [
     {
         "datum": "2026-05-18",
         "open": true,

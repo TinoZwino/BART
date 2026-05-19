@@ -1,0 +1,258 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;900&family=Roboto+Slab:wght@400;700&display=swap');
+
+@font-face {
+    font-family: 'BazartBold';
+    src: url('media/Logo Bazart (voor stad)/Fonts/Kopie van FRKrakenSlab-Bold.otf');
+}
+
+:root {
+    --bazart-red: #E30613;
+    --bazart-dark-red: #B00000;
+    --bazart-light-red: #FFF5F5;
+    --kurt-bg: #E1E8ED;
+    --bg-light: #F4F7F9;
+    --text-dark: #333;
+    --border-grey: #CCC;
+    --unavailable-grey: #D1D1D1;
+    --available-green: #90EE90;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    background-color: var(--bazart-light-red);
+    color: var(--text-dark);
+}
+
+/* Top Bar (White) */
+.top-bar {
+    background-color: white;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.logo-box {
+    background-color: var(--bazart-red);
+    height: 100%;
+    width: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-white {
+    height: 30px;
+}
+
+.top-bar-text {
+    padding-left: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.bazart-word {
+    font-family: 'BazartBold', sans-serif;
+    font-size: 1.2rem;
+    color: #000;
+}
+
+.bart-subtitle {
+    font-family: 'Roboto Slab', serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #666;
+    margin-top: 2px;
+}
+
+/* Main Header (Red) */
+.main-header {
+    background-color: var(--bazart-dark-red);
+    color: white;
+    padding: 15px 20px;
+}
+
+.container-header {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.location-title {
+    font-family: 'Roboto Slab', serif;
+    font-size: 1.5rem;
+    margin: 0;
+    font-weight: 700;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+section {
+    margin-bottom: 30px;
+}
+
+h2 {
+    font-family: 'Roboto Slab', serif;
+    font-size: 1.1rem;
+    color: var(--bazart-dark-red);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+}
+
+.icon {
+    margin-right: 8px;
+    font-size: 20px;
+}
+
+/* Controls */
+.control-group {
+    display: flex;
+    gap: 20px;
+    background: white;
+    padding: 15px;
+    border: 1px solid var(--border-grey);
+    border-radius: 4px;
+}
+
+.input-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-wrapper label {
+    font-size: 0.8rem;
+    margin-bottom: 5px;
+}
+
+.input-wrapper input {
+    padding: 5px;
+    border: 1px solid var(--border-grey);
+    border-radius: 3px;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Legend */
+.legend-items {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 10px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    margin-right: 10px;
+    border: 1px solid #999;
+}
+
+.circle.unavailable {
+    background-color: var(--unavailable-grey);
+    color: #666;
+}
+
+.circle.available {
+    background-color: var(--available-green);
+    color: #006400;
+}
+
+.instruction {
+    font-size: 0.8rem;
+    font-style: italic;
+    color: #666;
+}
+
+/* Floorplan */
+.floorplan-wrapper {
+    background: white;
+    border: 1px solid var(--border-grey);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.floorplan-header {
+    background-color: #fcfcfc;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    text-align: center;
+}
+
+.floorplan-header h2 {
+    font-family: 'Roboto Slab', serif;
+    font-weight: 900;
+    justify-content: center;
+    margin: 0;
+    font-size: 1.5rem;
+    color: black;
+    text-transform: uppercase;
+}
+
+.floorplan-container {
+    position: relative;
+    width: 100%;
+    margin: 0 auto;
+    border: 1px solid #eee;
+    background-color: white;
+}
+
+.floorplan-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    user-select: none;
+    pointer-events: none;
+    position: relative;
+}
+
+.seats-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: auto; /* Required for the click-coordinate tool */
+}
+
+.seat-btn {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1px solid #888;
+    background-color: var(--unavailable-grey);
+    color: #444;
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.7rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.1s;
+    pointer-events: auto;
+    padding: 0;
+    transform: translate(-50%, -50%); /* Centers the dot on the coordinate */
+}
+
+.seat-btn:hover {
+    transform: translate(-50%, -50%) scale(1.2);
+    background-color: #bbb;
+}

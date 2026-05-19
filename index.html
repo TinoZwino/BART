@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BART - Bazart Reservatietool</title>
+    <link rel="icon" href="media/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <nav class="top-bar">
+        <div class="logo-box">
+            <img src="media/logo_white.svg" alt="Bazart Logo" class="logo-white">
+        </div>
+        <div class="top-bar-text">
+            <span class="bazart-word">Bazart</span>
+            <span class="bart-subtitle">reservatietool (BART)</span>
+        </div>
+    </nav>
+    <header class="main-header">
+        <div class="container-header">
+            <h1 class="location-title">OPEK - Garage</h1>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="controls">
+            <h2><span class="material-icons icon">schedule</span> Vanaf wanneer wil je reserveren</h2>
+            <div class="control-group">
+                <div class="input-wrapper">
+                    <label for="start-date">Startdatum</label>
+                    <input type="date" id="start-date" value="2026-05-19">
+                </div>
+                <div class="input-wrapper">
+                    <label for="start-time">Startuur</label>
+                    <input type="time" id="start-time" value="16:00">
+                </div>
+            </div>
+        </section>
+
+        <section class="legend">
+            <h2><span class="material-icons icon">info</span> Legende</h2>
+            <div class="legend-items">
+                <div class="legend-item">
+                    <span class="circle unavailable"></span>
+                    <span>Niet beschikbaar</span>
+                </div>
+                <div class="legend-item">
+                    <span class="circle available"></span>
+                    <span>Beschikbaar</span>
+                </div>
+            </div>
+            <p class="instruction">Klik op een bolletje op de kaart om een beschikbare plaats te selecteren</p>
+        </section>
+
+        <section class="floorplan-wrapper">
+            <div class="floorplan-header">
+                <h2>DE GARAGE - ZITPLAATSEN</h2>
+            </div>
+            <div id="floorplan-container" class="floorplan-container">
+                <img src="media/grondplan.svg" alt="Grondplan De Garage" class="floorplan-image">
+                <div id="seats-overlay" class="seats-overlay">
+                    <!-- Seats will be generated or positioned here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

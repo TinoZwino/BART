@@ -9,6 +9,8 @@
     --bazart-red: #E30613;
     --bazart-dark-red: #B00000;
     --bazart-light-red: #FFF5F5;
+    --user-blue: #007BFF;
+    --user-dark-blue: #0056B3;
     --kurt-bg: #E1E8ED;
     --bg-light: #F4F7F9;
     --text-dark: #333;
@@ -144,6 +146,7 @@ h2 {
     display: flex;
     gap: 20px;
     margin-bottom: 10px;
+    flex-wrap: wrap;
 }
 
 .legend-item {
@@ -172,6 +175,10 @@ h2 {
 .circle.unavailable {
     background-color: var(--unavailable-grey);
     color: #666;
+}
+
+.circle.user-reserved {
+    background-color: var(--user-blue);
 }
 
 .circle.closed {
@@ -210,6 +217,10 @@ h2 {
     color: #006400; /* Dark green text for better contrast on light green bg */
 }
 
+.message-wrapper.user-reserved .message-header {
+    background-color: var(--user-blue);
+}
+
 .message-header h2 {
     font-family: 'Roboto Slab', serif;
     font-weight: 900;
@@ -229,6 +240,37 @@ h2 {
 
 .message-body p {
     margin: 0;
+}
+
+.reservation-action {
+    margin-top: 15px;
+}
+
+.reserve-btn {
+    background-color: #333;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.25rem;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+.reserve-btn:hover {
+    background-color: #000;
+}
+
+.message-wrapper.user-reserved .reserve-btn {
+    background-color: #fff;
+    color: var(--user-blue);
+    border: 1px solid var(--user-blue);
+}
+
+.message-wrapper.user-reserved .reserve-btn:hover {
+    background-color: #f0f7ff;
 }
 
 /* Floorplan */
@@ -316,6 +358,12 @@ h2 {
 .seat-btn.available {
     background-color: var(--available-green);
     color: #006400;
+}
+
+.seat-btn.user-reserved {
+    background-color: var(--user-blue);
+    color: white;
+    border-color: var(--user-dark-blue);
 }
 
 .seat-btn.closed {

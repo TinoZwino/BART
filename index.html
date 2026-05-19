@@ -27,7 +27,7 @@
 
     <main class="container">
         <section class="controls">
-            <h2><span class="material-icons icon">schedule</span> Vanaf wanneer wil je reserveren</h2>
+            <h2><span class="material-icons icon">schedule</span> Op welke dag wil je reserveren?</h2>
             <div class="control-group">
                 <div class="input-wrapper">
                     <label for="start-date">Startdatum</label>
@@ -52,6 +52,10 @@
                     <span>Gereserveerd</span>
                 </div>
                 <div class="legend-item">
+                    <span class="circle user-reserved"></span>
+                    <span>Gereserveerd door jou</span>
+                </div>
+                <div class="legend-item">
                     <span class="circle closed"></span>
                     <span>Niet beschikbaar</span>
                 </div>
@@ -65,6 +69,9 @@
             </div>
             <div class="message-body">
                 <p id="message-content"></p>
+                <div id="reservation-action" class="reservation-action" style="display: none;">
+                    <button id="reserve-btn" class="reserve-btn">Deze plek reserveren</button>
+                </div>
             </div>
         </section>
 

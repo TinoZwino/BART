@@ -5,8 +5,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const messageWrapper = document.getElementById('message-wrapper');
     const messageTitle = document.getElementById('message-title');
     const messageContent = document.getElementById('message-content');
+    const reservationAction = document.getElementById('reservation-action');
+    const reserveBtn = document.getElementById('reserve-btn');
 
     let lastClickedSeatIndex = -1;
+    
+    /**
+     * LOCAL RESERVATION STATE
+     */
+    let userReservations = {};
 
     /**
      * EXPERT COORDINATE SYSTEM
@@ -15,9 +22,9 @@ document.addEventListener('DOMContentLoaded', () => {
         { top: 29, left: 30 },
         { top: 34, left: 30 },
         { top: 44, left: 37 },
-        { top: 45, left: 45 },
-        { top: 44, left: 52 },
-        { top: 35, left: 59 },
+        { top: 44, left: 44 },
+        { top: 44, left: 51 },
+        { top: 34, left: 59 },
         { top: 29, left: 59 },
         { top: 25, left: 66 },
         { top: 30, left: 66 },
@@ -54,9 +61,9 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function renderSeats(date, drukte, isOpen, closedMessage) {
         seatsOverlay.innerHTML = '';
-        lastClickedSeatIndex = -1; // Reset when rendering new set
         
         let allTakenIndices = [];
+        const userReservedIndex = userReservations[date] !== undefined ? userReservations[date] : -1;
 
         if (isOpen) {
             const primaryIndices = [0, 1, 2, 3, 4, 5, 6];
@@ -85,36 +92,25 @@ document.addEventListener('DOMContentLoaded', () => {
                         lastClickedSeatIndex = index;
                     }
                 });
+            } else if (index === userReservedIndex) {
+                // USER RESERVED STATE (Blue)
+                btn.className = 'seat-btn user-reserved';
+                btn.title = `Plaats ${index + 1} (Gereserveerd door jou)`;
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showUserReservedMessage(index);
+                });
             } else {
                 const isTaken = allTakenIndices.includes(index);
                 btn.className = `seat-btn ${isTaken ? 'unavailable' : 'available'}`;
-                btn.title = `Plaats ${index + 1} (${isTaken ? 'Niet beschikbaar' : 'Beschikbaar'})`;
+                btn.title = `Plaats ${index + 1} (${isTaken ? 'Gereserveerd' : 'Beschikbaar'})`;
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     
-                    // Reset classes
-                    messageWrapper.classList.remove('reserved', 'selected');
-
                     if (isTaken) {
-                        // Display reserved message in box
-                        messageTitle.textContent = `Plaats ${index + 1}: gereserveerd`;
-                        messageContent.textContent = "De plaats die je hebt geselecteerd is al gereserveerd door iemand anders, probeer een andere plek te reserveren.";
-                        messageWrapper.classList.add('reserved');
-                        messageWrapper.style.display = 'block';
-                        
-                        if (lastClickedSeatIndex === index) {
-                            alert('Deze plaats is al gereserveerd.');
-                        } else {
-                            lastClickedSeatIndex = index;
-                        }
+                        showReservedMessage(index);
                     } else {
-                        // Display selection message in box (Green header)
-                        messageTitle.textContent = `Plaats ${index + 1}: beschikbaar`;
-                        messageContent.textContent = `Je hebt plaats ${index + 1} geselecteerd. Deze plek is nog vrij om te reserveren.`;
-                        messageWrapper.classList.add('selected');
-                        messageWrapper.style.display = 'block';
-                        
-                        lastClickedSeatIndex = index;
+                        showAvailableMessage(index);
                     }
                 });
             }
@@ -122,6 +118,77 @@ document.addEventListener('DOMContentLoaded', () => {
             seatsOverlay.appendChild(btn);
         });
     }
+
+    /**
+     * UI FEEDBACK LOGIC
+     */
+    function showAvailableMessage(index) {
+        messageWrapper.classList.remove('reserved', 'user-reserved');
+        messageWrapper.classList.add('selected');
+        messageTitle.textContent = `Plaats ${index + 1}: beschikbaar`;
+        messageContent.textContent = `Je hebt plaats ${index + 1} geselecteerd. Deze plek is nog vrij om te reserveren.`;
+        
+        reserveBtn.textContent = "Deze plek reserveren";
+        reservationAction.style.display = 'block';
+        
+        messageWrapper.style.display = 'block';
+        lastClickedSeatIndex = index;
+    }
+
+    function showReservedMessage(index) {
+        messageWrapper.classList.remove('selected', 'user-reserved');
+        messageWrapper.classList.add('reserved');
+        messageTitle.textContent = `Plaats ${index + 1}: gereserveerd`;
+        messageContent.textContent = "De plaats die je hebt geselecteerd is al gereserveerd door iemand anders, probeer een andere plek te reserveren.";
+        
+        reservationAction.style.display = 'none';
+        messageWrapper.style.display = 'block';
+        
+        if (lastClickedSeatIndex === index) {
+            alert('Deze plaats is al gereserveerd.');
+        } else {
+            lastClickedSeatIndex = index;
+        }
+    }
+
+    function showUserReservedMessage(index) {
+        messageWrapper.classList.remove('selected', 'reserved');
+        messageWrapper.classList.add('user-reserved');
+        messageTitle.textContent = `Plaats ${index + 1}: gereserveerd door jou`;
+        messageContent.textContent = `Je hebt deze plaats gereserveerd voor de geselecteerde dag.`;
+        
+        reserveBtn.textContent = "Reservatie verwijderen";
+        reservationAction.style.display = 'block';
+        
+        messageWrapper.style.display = 'block';
+        lastClickedSeatIndex = index;
+    }
+
+    /**
+     * RESERVATION ACTION
+     */
+    reserveBtn.addEventListener('click', () => {
+        const date = dateInput.value;
+        const currentRes = userReservations[date];
+        
+        // 1. Update State
+        if (currentRes === lastClickedSeatIndex) {
+            delete userReservations[date];
+        } else {
+            userReservations[date] = lastClickedSeatIndex;
+        }
+        
+        // 2. Direct UI Update for the box (No flicker)
+        if (userReservations[date] === lastClickedSeatIndex) {
+            showUserReservedMessage(lastClickedSeatIndex);
+        } else {
+            showAvailableMessage(lastClickedSeatIndex);
+        }
+
+        // 3. Update the dots in the background
+        const dayInfo = window.BART_BEZETTING.find(item => item.datum === date);
+        renderSeats(date, dayInfo ? (dayInfo.open ? dayInfo.drukte : 11) : 11, dayInfo ? dayInfo.open : false, dayInfo ? dayInfo.bericht : "");
+    });
 
     /**
      * CONFIG-BASED AVAILABILITY LOGIC
@@ -137,19 +204,16 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleDateChange(selectedDate, data) {
         const dayInfo = data.find(item => item.datum === selectedDate);
         
-        // Always reset styling when changing date
-        messageWrapper.classList.remove('reserved', 'selected');
+        messageWrapper.classList.remove('reserved', 'selected', 'user-reserved');
         messageTitle.textContent = "Garage niet beschikbaar op de gekozen datum";
+        reservationAction.style.display = 'none';
 
         if (dayInfo) {
             if (!dayInfo.open) {
-                // Show message box
                 messageContent.textContent = dayInfo.bericht || "Deze locatie is vandaag gesloten.";
                 messageWrapper.style.display = 'block';
-                // Render all seats red
                 renderSeats(selectedDate, 11, false, dayInfo.bericht || "Deze locatie is vandaag gesloten.");
             } else {
-                // Hide message box
                 messageWrapper.style.display = 'none';
                 renderSeats(selectedDate, dayInfo.drukte, true);
             }

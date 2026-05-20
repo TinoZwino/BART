@@ -245,7 +245,32 @@ document.addEventListener('DOMContentLoaded', () => {
             const month = String(now.getMonth() + 1).padStart(2, '0');
             const day = String(now.getDate()).padStart(2, '0');
             const today = `${year}-${month}-${day}`;
-            dateInput.value = today;
+            
+            let initialDate = today;
+            try {
+                const savedDate = localStorage.getItem('bart_selected_date');
+                const lastAccessed = localStorage.getItem('bart_last_accessed_timestamp');
+                
+                if (savedDate && lastAccessed) {
+                    const elapsedMs = Date.now() - parseInt(lastAccessed, 10);
+                    const eightHoursMs = 8 * 60 * 60 * 1000;
+                    if (elapsedMs <= eightHoursMs) {
+                        initialDate = savedDate;
+                    }
+                }
+            } catch (e) {
+                console.error('Failed to load selected date from localStorage:', e);
+            }
+
+            dateInput.value = initialDate;
+            
+            // Save/update access metadata on page load
+            try {
+                localStorage.setItem('bart_selected_date', initialDate);
+                localStorage.setItem('bart_last_accessed_timestamp', Date.now().toString());
+            } catch (e) {
+                console.error('Failed to save selected date to localStorage:', e);
+            }
 
             // Robust URL Parsing: checks search (?2), hash (#2), and pathname (/2)
             const getSeatFromURL = () => {
@@ -301,7 +326,16 @@ document.addEventListener('DOMContentLoaded', () => {
             dateInput.max = dates[dates.length - 1];
         }
         dateInput.addEventListener('change', () => {
-            handleDateChange(dateInput.value, data);
+            const selectedDate = dateInput.value;
+            handleDateChange(selectedDate, data);
+            
+            // Save selected date and update access timestamp
+            try {
+                localStorage.setItem('bart_selected_date', selectedDate);
+                localStorage.setItem('bart_last_accessed_timestamp', Date.now().toString());
+            } catch (e) {
+                console.error('Failed to save selected date to localStorage:', e);
+            }
         });
     }
 

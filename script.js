@@ -14,7 +14,16 @@ document.addEventListener('DOMContentLoaded', () => {
     /**
      * LOCAL RESERVATION STATE
      */
+    const STORAGE_KEY = 'bart_user_reservations';
     let userReservations = {};
+    try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+            userReservations = JSON.parse(stored);
+        }
+    } catch (e) {
+        console.error('Failed to load reservations from localStorage:', e);
+    }
 
     /**
      * EXPERT COORDINATE SYSTEM
@@ -206,6 +215,13 @@ document.addEventListener('DOMContentLoaded', () => {
             delete userReservations[date];
         } else {
             userReservations[date] = lastClickedSeatIndex;
+        }
+        
+        // Save to LocalStorage
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(userReservations));
+        } catch (e) {
+            console.error('Failed to save reservations to localStorage:', e);
         }
         
         // 2. Direct UI Update for the box (No flicker)

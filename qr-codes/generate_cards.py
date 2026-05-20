@@ -5,6 +5,7 @@ import xml.etree.ElementTree as ET
 # Configuration
 SCRIPT_JS_PATH = "../script.js"
 TEMPLATE_PATH = "kaart.svg"
+OUTPUT_DIR = "output"
 
 # Namespaces
 NAMESPACES = {
@@ -31,9 +32,18 @@ def get_seat_count():
 
 def generate_cards(count):
     """Generates a customized SVG card for each seat."""
-    if not os.path.exists(TEMPLATE_PATH):
-        print(f"Error: Template {TEMPLATE_PATH} not found.")
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    template_abs_path = os.path.join(script_dir, TEMPLATE_PATH)
+    output_dir_abs_path = os.path.join(script_dir, OUTPUT_DIR)
+
+    if not os.path.exists(template_abs_path):
+        print(f"Error: Template {template_abs_path} not found.")
         return
+
+    # Ensure output directory exists
+    if not os.path.exists(output_dir_abs_path):
+        os.makedirs(output_dir_abs_path)
+        print(f"Created directory: {output_dir_abs_path}")
 
     # Register namespaces to keep the output clean and compatible with Inkscape
     for prefix, uri in NAMESPACES.items():
@@ -43,7 +53,7 @@ def generate_cards(count):
             ET.register_namespace('', uri)
     
     # We load the template once
-    tree = ET.parse(TEMPLATE_PATH)
+    tree = ET.parse(template_abs_path)
     root = tree.getroot()
 
     label_attr = f"{{{NAMESPACES['inkscape']}}}label"
@@ -71,7 +81,7 @@ def generate_cards(count):
 
             # 2. Update QR Code Image
             if label == 'qr-code':
-                new_href = f"output/qr-code-{i:02d}.png"
+                new_href = f"qr-code-{i:02d}.png"
                 elem.set(xlink_href, new_href)
                 found_qr = True
 
@@ -80,7 +90,7 @@ def generate_cards(count):
         if not found_qr:
             print(f"Warning: Could not find element with inkscape:label='qr-code' for seat {i}")
 
-        output_filename = f"kaart-{i}.svg"
+        output_filename = os.path.join(output_dir_abs_path, f"kaart-{i}.svg")
         tree.write(output_filename, encoding='utf-8', xml_declaration=True)
         print(f"Generated {output_filename}")
 

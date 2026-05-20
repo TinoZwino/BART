@@ -223,8 +223,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function initAvailability() {
         const data = window.BART_BEZETTING;
         if (data) {
-            // Set date to today
-            const today = new Date().toISOString().split('T')[0];
+            // Set date to today (local time)
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const today = `${year}-${month}-${day}`;
             dateInput.value = today;
 
             // Robust URL Parsing: checks search (?2), hash (#2), and pathname (/2)
